@@ -15,7 +15,7 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const loginUser = catchAsync(async (req, res) => {
-  const result = await authService.userLoginIntoDb(req.body);
+  const result = await authService.userLoginIntoDb(res, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -29,11 +29,24 @@ const loginUser = catchAsync(async (req, res) => {
 
 const updateUserName = catchAsync(async (req, res) => {
   const result = await authService.updateUserNameIntoDb(req.user, req.body);
-  console.log(result, req.body);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User login successfully',
+    message: 'Name updated successfully',
+    data: result,
+  });
+});
+
+
+
+const updateUserEmail = catchAsync(async (req, res) => {
+  const result = await authService.updateUserEmailIntoDb(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Email updated successfully',
     data: result,
   });
 })
@@ -44,5 +57,6 @@ const updateUserName = catchAsync(async (req, res) => {
 export const authController = {
   createUser,
   loginUser,
-  updateUserName
+  updateUserName,
+  updateUserEmail,
 };

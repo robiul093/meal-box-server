@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import config from '../../config';
 import { TUser } from './auth.interface';
 import { User } from './auth.model';
@@ -10,7 +11,7 @@ const createUserIntoDb = async (payload: TUser) => {
   return result;
 };
 
-const userLoginIntoDb = async (payload: TUser) => {
+const userLoginIntoDb = async (res: Response, payload: TUser) => {
   const user = await User.findOne({ email: payload.email });
   if (!user) {
     throw new Error('User not found!');
@@ -42,18 +43,74 @@ const userLoginIntoDb = async (payload: TUser) => {
     expiresIn: '30d',
   });
 
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
   return accessToken;
 };
 
 
-const updateUserNameIntoDb = async (user: JwtPayload, payload: { name?: string, email?: string }) => {
-  const result = await User.findByIdAndUpdate({ _id: user.userId }, { $set: payload }, { new: true });
+const updateUserNameIntoDb = async (
+  user: JwtPayload, 
+  payload: { name?: string, email?: string }
+) => {
 
-  return result;
+  const updatedUser = await User.findByIdAndUpdate({ _id: user.userId }, { $set: payload }, { new: true });
+
+  if (!updatedUser) {
+    throw new Error('Failed to update!');
+  }
+
+  const jwtPayload = {
+    userId: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    phoneNumber: updatedUser.phoneNumber,
+    role: updatedUser.role,
+  };
+
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: '30d',
+  });
+
+  return accessToken;
+};
+
+
+const updateUserEmailIntoDb = async (
+  user: JwtPayload, 
+  payload: { name?: string, email?: string }
+) => {
+
+  const updatedUser = await User.findByIdAndUpdate({ _id: user.userId }, { $set: payload }, { new: true });
+
+  if (!updatedUser) {
+    throw new Error('Failed to update!');
+  }
+
+  const jwtPayload = {
+    userId: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    phoneNumber: updatedUser.phoneNumber,
+    role: updatedUser.role,
+  };
+
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: '30d',
+  });
+
+  return accessToken;
 };
 
 export const authService = {
   createUserIntoDb,
   userLoginIntoDb,
   updateUserNameIntoDb,
+  updateUserEmailIntoDb,
 };
