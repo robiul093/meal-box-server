@@ -25,7 +25,24 @@ const loginUser = catchAsync(async (req, res) => {
   });
 });
 
+
+
+const updateUserName = catchAsync(async (req, res) => {
+  const result = await authService.updateUserNameIntoDb(req.user, req.body);
+  console.log(result, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User login successfully',
+    data: result,
+  });
+})
+
+
+
+
 export const authController = {
   createUser,
   loginUser,
+  updateUserName
 };

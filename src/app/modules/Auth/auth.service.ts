@@ -2,7 +2,7 @@ import config from '../../config';
 import { TUser } from './auth.interface';
 import { User } from './auth.model';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const createUserIntoDb = async (payload: TUser) => {
   const result = await User.create(payload);
@@ -45,7 +45,15 @@ const userLoginIntoDb = async (payload: TUser) => {
   return accessToken;
 };
 
+
+const updateUserNameIntoDb = async (user: JwtPayload, payload: { name?: string, email?: string }) => {
+  const result = await User.findByIdAndUpdate({ _id: user.userId }, { $set: payload }, { new: true });
+
+  return result;
+};
+
 export const authService = {
   createUserIntoDb,
   userLoginIntoDb,
+  updateUserNameIntoDb,
 };
