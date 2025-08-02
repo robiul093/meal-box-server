@@ -47,7 +47,7 @@ const auth = (...requiredRole: TUserRole[]) => {
 
     if (requiredRole && !requiredRole.includes(role)) {
       // console.log(requiredRole , !requiredRole.includes(role))
-      throw new Error('You role is not authorized');
+      throw new Error('Your role is not authorized');
     }
 
     req.user = decoded;

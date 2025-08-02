@@ -56,7 +56,7 @@ const userLoginIntoDb = async (res: Response, payload: TUser) => {
 
 
 const updateUserNameIntoDb = async (
-  user: JwtPayload, 
+  user: JwtPayload,
   payload: { name?: string, email?: string }
 ) => {
 
@@ -83,7 +83,7 @@ const updateUserNameIntoDb = async (
 
 
 const updateUserEmailIntoDb = async (
-  user: JwtPayload, 
+  user: JwtPayload,
   payload: { name?: string, email?: string }
 ) => {
 
@@ -108,9 +108,35 @@ const updateUserEmailIntoDb = async (
   return accessToken;
 };
 
+
+const updateUserPasswordIntoDb = async (
+  user: JwtPayload,
+  payload: { currentPassword: string, newPassword: string }
+) => {
+  const dbUser = await User.findById(user.userId);
+  if (!dbUser) throw new Error('User not Found');
+
+  const isPasswordMatch = await bcrypt.compare(payload.currentPassword, dbUser.password);
+
+  if (!isPasswordMatch) {
+    throw new Error('Password not match');
+  };
+
+  const updatedHashPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
+  const result = await User.findByIdAndUpdate(user.userId , {
+    $set: {
+      'password': updatedHashPassword
+    }
+  }, { new: true })
+
+
+  return result;
+}
+
 export const authService = {
   createUserIntoDb,
   userLoginIntoDb,
   updateUserNameIntoDb,
   updateUserEmailIntoDb,
+  updateUserPasswordIntoDb
 };

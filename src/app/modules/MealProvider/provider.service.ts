@@ -41,6 +41,49 @@ const getOrderFromDb = async (user: JwtPayload) => {
   return result;
 };
 
+
+
+const getMostOrderedMealFromDb =async () => {
+  const popularMeals = await Order.aggregate([
+    {
+      $unwind: "$mealSelection"
+    },
+    {
+      $group: {
+        _id: "$mealSelection.mealId",
+        totalOrdered: { $sum: "$mealSelection.quantity" }
+      }
+    },
+    {
+      $sort: { totalOrdered: -1 }
+    },
+    {
+      $lookup: {
+        from: "meals", // your meals collection name
+        localField: "_id",
+        foreignField: "_id",
+        as: "mealDetails"
+      }
+    },
+    {
+      $unwind: "$mealDetails"
+    },
+    {
+      $project: {
+        mealId: "$_id",
+        totalOrdered: 1,
+        name: "$mealDetails.name",
+        price: "$mealDetails.price",
+        _id: 0
+      }
+    }
+  ])
+
+  return popularMeals;
+}
+
+
+
 const responseOrderToCustomer = async (payload: {
   orderId: string;
   status: string;
@@ -64,5 +107,6 @@ export const providerService = {
   getSingleMealFromDb,
   updateSingleMealIntoDb,
   getOrderFromDb,
+  getMostOrderedMealFromDb,
   responseOrderToCustomer,
 };

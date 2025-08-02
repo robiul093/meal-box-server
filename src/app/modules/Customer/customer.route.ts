@@ -9,11 +9,13 @@ router.post(
   auth('customer'),
   customerController.createOrder,
 );
+
 router.get(
   '/customers/orders',
   auth('customer'),
   customerController.getAllOrder,
 );
+
 router.get('/customers/meal', customerController.getAllMeal);
 
 export const CustomerRouter = router;

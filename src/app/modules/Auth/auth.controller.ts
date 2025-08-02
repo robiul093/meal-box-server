@@ -49,6 +49,19 @@ const updateUserEmail = catchAsync(async (req, res) => {
     message: 'Email updated successfully',
     data: result,
   });
+});
+
+
+
+const updateUserPassword = catchAsync(async (req, res) => {
+  const result = await authService.updateUserPasswordIntoDb(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password updated successfully',
+    data: result,
+  });
 })
 
 
@@ -59,4 +72,5 @@ export const authController = {
   loginUser,
   updateUserName,
   updateUserEmail,
+  updateUserPassword
 };

@@ -15,7 +15,8 @@ const getAllOrderFromDb = async () => {
     .populate({
       path: 'mealSelection.mealId',
       // select: "name price ingredients",
-    });
+    })
+    .sort({ createdAt: -1 });
 
   return result;
 };

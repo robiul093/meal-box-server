@@ -36,6 +36,6 @@ const orderSchema = new Schema<TOrder>({
     enum: ['pending', 'in-progress', 'delivered', 'cancelled'],
     default: 'pending',
   },
-});
+}, { timestamps: true });
 
 export const Order = mongoose.model('Order', orderSchema);

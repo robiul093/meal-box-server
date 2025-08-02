@@ -64,6 +64,20 @@ const getOrder = catchAsync(async (req, res) => {
   });
 });
 
+
+
+const getMostOrderedMeal = catchAsync(async (req, res) => {
+  const result = await providerService.getMostOrderedMealFromDb();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Popular meal retrived successfully',
+    data: result,
+  });
+})
+
+
 const responseOrder = catchAsync(async (req, res) => {
   const result = await providerService.responseOrderToCustomer(req.body);
 
@@ -81,5 +95,6 @@ export const providerController = {
   getSingleMeal,
   updateMeal,
   getOrder,
+  getMostOrderedMeal,
   responseOrder,
 };

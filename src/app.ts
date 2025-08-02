@@ -5,6 +5,7 @@ import notFound from './app/middlewares/notFound';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import { ProviderRouter } from './app/modules/MealProvider/provider.route';
 import { CustomerRouter } from './app/modules/Customer/customer.route';
+import { PaymentRoutes } from './app/modules/Payment/payment.route';
 const app = express();
 
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use(
 app.use('/api', AuthRouter);
 app.use('/api', ProviderRouter);
 app.use('/api', CustomerRouter);
+app.use("/api/payment", PaymentRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Meal Box is running!');
